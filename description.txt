@@ -1,0 +1,20 @@
+[h1] From [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1581892848] JohnWatson[/url][/h1]
+
+[hr][/hr]
+Client mod. Automatically unequips your rechargable items at 1% to 10% for normal items and exclusive 1% to 40% to shield of terror & eye mask and Dreadstone set
+
+[hr][/hr] 
+
+[h1] Configuration [/h1]
+
+[b]* normal items to unequip at 1 to 10% > [/b] [u]default set to 1% [/u]
+[b]* Shield of terror and eye mask to unequip from 1% to 40% >[/b] [u]default set to 25% [/u]
+[b]* Dreadstone SET 1% to 40% >[/b] [u]default set to 1% [/u]
+[b]* Ignore hand slot items >[/b] [u]default set to YES [/u][b](set to false to work with Shield of terror and eye mask)[/b]
+[b]* Force retrying unequip >[/b] [u]default set to true[/u]
+
+
+
+[hr][/hr]
+
+[i]if a item is not rechargable and unequip or to add compatiblity with a mod let me know to added to the list to not unequip[/i]

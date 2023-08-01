@@ -109,12 +109,55 @@ local NONREFILLABLE = {
     wateringcan = true,
     pocketwatch_weapon = true,
 
-    -- MODDED UNREPAIRABLES
+    -- MODDED UNREPAIRABLES https://steamcommunity.com/workshop/filedetails/discussion/1581892848/1741103267263389256/
     dark_axe = true,
     dark_pickaxe = true,
     fryingpan = true,
     mace_sting = true,
     sword_rock = true,
+    armor_iron = true,
+    armor_gold = true,
+    armor_seashell = true,
+    armor_obsidian = true,
+    armor_limestone = true,
+    armor_cactus = true,
+    armor_stone = true,
+    armor_bone = true,
+    armor_cobalt = true,
+    armor_tungsten = true,
+    armormosquito = true,
+    geararmor = true,
+    armor_my = true,
+    armor_bluegem = true,
+    armor_redgem = true,
+    armor_purplegem = true,
+    armor_greengem = true,
+    armor_orangegem = true,
+    armor_yellowgem = true,
+    armor_whitegem = true,
+    armor_opalgem = true,
+    hat_wood = true,
+    hat_ox = true,
+    oxhat = true,
+    ruinsNhat = true,
+    helmet_iron = true,
+    helmet_cobalt = true,
+    gear_helmet = true,
+    bucket_helmet = true,
+    tungsten_hardhat = true,
+    spartahelmut = true,
+    birchnuthat = true,
+    wathgrithrhat_f_common = true,
+    footballhat_festive = true,
+    bonehat = true,
+    dragonhat = true,
+    dragonarmor = true,
+    spiderarmor = true,
+    toothhat = true,
+    goldarmor = true,
+    goldhelm = true,
+    nightswatchcloak = true,
+
 
     -- MODDED UNBREAKABLES
     bottlelantern = true,
@@ -122,7 +165,17 @@ local NONREFILLABLE = {
     elegantlantern = true,
     opulentlantern = true,
     scythe = true,
-    snowglobe = true
+    snowglobe = true,
+
+    -- From Beyond
+
+    staff_lunarplant = true,
+    shovel_lunarplant = true,
+    sword_lunarplant = true,
+    pickaxe_lunarplant = true,
+    lunarplanthat = true,
+    armor_lunarplant = true
+
 
     -- MODDED Tropical Experience
 
@@ -153,12 +206,12 @@ end
 local function AutoUnequip(inst)
 
     local item = inst.entity:GetParent()
-    local slot = item.replica.equippable:EquipSlot()
-    local Cur_Percent = inst.percentused:value()
-
-    if (not item.replica.inventoryitem:IsHeldBy(G.ThePlayer)) or (not item.replica.equippable:IsEquipped()) then
+    if item.replica.equippable == nil or (not item.replica.inventoryitem:IsHeldBy(G.ThePlayer)) or (not item.replica.equippable:IsEquipped()) then
         return
     end
+
+    local Cur_Percent = inst.percentused:value()
+    local slot = item.replica.equippable:EquipSlot()
     local shouldbe = false
     local reason = "none"
 
@@ -199,6 +252,12 @@ local function AutoUnequip(inst)
     end
     if not DREADSTONE[item.prefab] then
         if Cur_Percent > cfgDreadstone then
+            return
+        end
+    end
+
+    if not NONREFILLABLE[item.prefab] then
+        if Cur_Percent > cfgPercent then
             return
         end
     end

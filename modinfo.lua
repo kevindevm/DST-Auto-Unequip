@@ -1,8 +1,8 @@
-name = 'Auto-Unequip on 1% (Dreadstone Update)'
+name = 'Auto-Unequip on 1-20% (From Beyond Update)'
 description =
     'Client mod. Automatically unequips your magiluminescence upon reaching (1-10)% durability to prevent it from breaking. Feature also applies to similar equippables such as eyebrellas, puffy vests, rain hats, etc.\nalso udpate to An Eye for an Eye Update and Dreadstone set'
 author = 'Kevindevm / John Watson'
-version = '5.71'
+version = '5.75'
 forumthread = ''
 api_version = 10
 dst_compatible = true

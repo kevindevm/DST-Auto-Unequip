@@ -7,6 +7,7 @@ local cfgEyeItems = GetModConfigData('MAU_EYE')
 local cfgDreadstone = GetModConfigData('MAU_DREADSTONE')
 local cfgPercent = GetModConfigData('MAU_unequipPer')
 local debug_mode = GetModConfigData('debug_mode')
+local durabilidadesAnteriores = {}
 
 if cfgEyeItems < 1 and cfgPercent ~= false then
     cfgEyeItems = cfgEyeItems * 100
@@ -202,15 +203,82 @@ local function Unequip(inst)
     end
 
 end
+local function imprimirObjeto(objeto, nivel)
+    nivel = nivel or 0
+    local indentacion = string.rep("  ", nivel)
+    for clave, valor in pairs(objeto) do
+        if type(valor) == "table" then
+            print(indentacion .. tostring(clave) .. ":")
+            imprimirObjeto(valor, nivel + 1)
+        else
+            print(indentacion .. tostring(clave) .. ": " .. tostring(valor))
+        end
+    end
+end
+local function print_data(data) --for debugging
+    if type(data) ~= "table" then
+        print(data, "is not a table.")
+        return
+    end
+    for k, v in pairs(data) do
+        print(k, v)
+    end
+end
 
-local function AutoUnequip(inst)
 
-    local item = inst.entity:GetParent()
-    if item.replica.equippable == nil or (not item.replica.inventoryitem:IsHeldBy(G.ThePlayer)) or (not item.replica.equippable:IsEquipped()) then
+
+local function checkEquip(inst, data)
+    if not (type(data) == "table" and data.eslot and data.item and data.item.components and data.item.components.armor) then
+        DebugPrint("nada=" .. data.item.prefab)
+        return
+    end
+   if NONREFILLABLE[data.item.prefab] and not DREADSTONE[data.item.prefab] and not EYEUPDATE[data.item.prefab] then 
+        DebugPrint("in the list, not a DREADSTONE and not eye item, item=" .. data.item.prefab)
         return
     end
 
+    local durability = math.floor((data.item.components.armor.condition / data.item.components.armor.maxcondition) * 100+0.5)
+
+    if not durabilidadesAnteriores[data.item] then
+        durabilidadesAnteriores[data.item] = durability
+        DebugPrint("opa")
+        return
+    end  
+
+    DebugPrint(durability .. " " .. data.eslot .. " " .. data.item.prefab)
+
+end
+
+local function AutoUnequip(inst)
+    -- imprimirObjeto(inst)
+    local item = inst.entity:GetParent()
+    if item.replica.equippable == nil or (not item.replica.inventoryitem:IsHeldBy(G.ThePlayer)) or (not item.replica.equippable:IsEquipped()) and NONREFILLABLE[item.prefab] then
+        return
+    end
+    if NONREFILLABLE[item.prefab] and not DREADSTONE[item.prefab] and not EYEUPDATE[item.prefab] then 
+        DebugPrint("in the list, not a DREADSTONE and not eye item, item=" .. item.prefab)
+        return
+    end
+
+
+    if not durabilidadesAnteriores[inst] then
+        durabilidadesAnteriores[inst] = inst.percentused:value()
+        DebugPrint("asdasd")
+        return
+    end  
     local Cur_Percent = inst.percentused:value()
+
+    if durabilidadesAnteriores[inst] and Cur_Percent>durabilidadesAnteriores[inst] then
+        DebugPrint("previous=" .. durabilidadesAnteriores[inst] .. " now=" .. Cur_Percent .. " so its going up")
+        return
+    else 
+        DebugPrint("previous=" .. durabilidadesAnteriores[inst] .. " now=" .. Cur_Percent .. " so its going down")
+        -- DebugPrint("going down")
+    end
+
+
+
+    durabilidadesAnteriores[inst] = Cur_Percent
     local slot = item.replica.equippable:EquipSlot()
     local shouldbe = false
     local reason = "none"
@@ -239,24 +307,23 @@ local function AutoUnequip(inst)
                    tostring(cfgPercent) .. "%")
 
     if (cfgHands and slot == G.EQUIPSLOTS.HANDS) or (NONREFILLABLE[item.prefab]) or
-        (cfgEyeItems and Cur_Percent > cfgEyeItems) or (cfgDreadstone and Cur_Percent > cfgDreadstone) or
-        (not cfgEyeItems and not cfgDreadstone and Cur_Percent > cfgPercent) then
+        (cfgDreadstone and DREADSTONE[item.prefab] and Cur_Percent > cfgEyeItems) or (cfgDreadstone and DREADSTONE[item.prefab] and Cur_Percent > cfgDreadstone) or
+        (not EYEUPDATE[item.prefab] and not DREADSTONE[item.prefab] and Cur_Percent > cfgPercent) then
         return
     end
 
-    -- DebugPrint("item.prefab=" .. item.prefab ac_resend.. " at=" .. Cur_Percent .. "% slot=" .. slot)
-    if not EYEUPDATE[item.prefab] then
+    if EYEUPDATE[item.prefab] then
         if Cur_Percent > cfgEyeItems then
             return
         end
     end
-    if not DREADSTONE[item.prefab] then
+    if DREADSTONE[item.prefab] then
         if Cur_Percent > cfgDreadstone then
             return
         end
     end
 
-    if not NONREFILLABLE[item.prefab] then
+    if not NONREFILLABLE[item.prefab] and not DREADSTONE[item.prefab] and not EYEUPDATE[item.prefab] then
         if Cur_Percent > cfgPercent then
             return
         end
@@ -277,9 +344,11 @@ local function AutoUnequip(inst)
 
 end
 
+
 local function PostInit(inst)
 
     local item = inst.entity:GetParent()
+
 
     if item == nil or item.replica.equippable == nil then
         return
@@ -290,6 +359,16 @@ local function PostInit(inst)
     end)
 
 end
+
+
+AddComponentPostInit("playercontroller", function(self)
+    if self.inst ~= GLOBAL.ThePlayer then
+        return
+    end
+    -- self.inst:ListenForEvent("equip", checkEquip)
+    self.inst:ListenForEvent("equip", checkEquip)
+
+end)
 
 AddPrefabPostInit('inventoryitem_classified', function(inst)
     if not G.TheNet:IsDedicated() then

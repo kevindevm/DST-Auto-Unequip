@@ -1,8 +1,8 @@
 name = 'Auto-Unequip on 1-20% (From Beyond Update)'
 description =
     'Client mod. Automatically unequips your magiluminescence upon reaching (1-10)% durability to prevent it from breaking. Feature also applies to similar equippables such as eyebrellas, puffy vests, rain hats, etc.\nalso udpate to An Eye for an Eye Update and Dreadstone set'
-author = 'Kevindevm / John Watson'
-version = '5.75'
+author = 'Kevindevm, John Watson original idea'
+version = '5.79'
 forumthread = ''
 api_version = 10
 dst_compatible = true
@@ -62,10 +62,10 @@ local function AddConfig(label, name, options, default, hover)
     }
 end
 
-configuration_options = {AddConfig("Eye Mask and Shield Of terror", "MAU_EYE", nullBuildNumConfig(1, 40, 1, "%"), 25),
-                         AddConfig("Dreadston Set", "MAU_DREADSTONE", nullBuildNumConfig(1, 40, 1, "%"), 5),
-                         AddConfig("Notify on unequip", "MAU_notif", boolean, true),
-                         AddConfig("Unequip At ", "MAU_unequipPer", nullBuildNumConfig(1, 10, 1, "%"), 1),
-                         AddConfig("Ignore hand slot items", "MAU_hands", boolean, true),
+configuration_options = {AddConfig("Eye Mask and Shield Of terror", "MAU_EYE", nullBuildNumConfig(1, 60, 1, "%"), 25,"Will unequip shield & mask of terror when reaching this percent"),
+                         AddConfig("Dreadston Set", "MAU_DREADSTONE", nullBuildNumConfig(1, 60, 1, "%"), 5,"Will unequip Dreadston armour when reaching this percent"),
+                         AddConfig("Unequip At ", "MAU_unequipPer", nullBuildNumConfig(1, 10, 1, "%"), 1,"other normal items such as Magiluminescence,"),
+                         AddConfig("Notify on unequip", "MAU_notif", boolean, true,"your character will speak when an item is unequiped if set true"),
+                         AddConfig("Ignore hand slot items", "MAU_hands", boolean, true,"ignore ALL items in hand"),
                          AddConfig("Force retrying unequip", "MAU_force", boolean, true),
                          AddConfig("Debug mode", "debug_mode", boolean, false)}
